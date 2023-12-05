@@ -10,6 +10,7 @@ namespace FoodOrderingSystem_API.Models
         public string Description { get; set; }
         [Precision(18,4)]
         public decimal Price { get; set; }
+        public ICollection<OrderItem> OrderItems { get; set; }
 
         [ForeignKey(nameof(Restaurant))]
         public int restaurantId { get; set; }
