@@ -23,9 +23,14 @@ namespace FoodOrderingSystem_API.Respository
             await SaveAsync(); 
         }
 
-        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>> expression = null)
+        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>> expression = null, bool tracked = true)
         {             
             IQueryable<T> query = _dbSet;
+
+            if (!tracked)
+            {
+                query = query.AsNoTracking();
+            }
 
             if (expression != null)
             { 

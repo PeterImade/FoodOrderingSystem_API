@@ -16,5 +16,8 @@ namespace FoodOrderingSystem_API.Data
         }
         public DbSet<Menu> Menus { get; set; }
         public DbSet<Restaurant> Restaurants  { get; set; }
+        public DbSet<Order> Orders  { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Customer> Customers { get; set; }
     }
 }

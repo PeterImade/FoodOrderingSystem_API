@@ -7,8 +7,8 @@ namespace FoodOrderingSystem_API.Contracts
         Task CreateAsync(T entity);
         Task RemoveAsync(T entity);
         Task UpdateAsync(T entity);
-        Task<T> GetAsync(Expression<Func<T, bool>> expression, bool tracked);
-        Task<List<T>> GetAllAsync(Expression<Func<T, bool>> expression);
+        Task<T> GetAsync(Expression<Func<T, bool>> expression = null, bool tracked = true);
+        Task<List<T>> GetAllAsync(Expression<Func<T, bool>> expression = null, bool tracked = true);
         Task SaveAsync();
     }
 }
