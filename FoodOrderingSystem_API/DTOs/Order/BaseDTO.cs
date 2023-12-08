@@ -7,7 +7,7 @@ namespace FoodOrderingSystem_API.DTOs.Order
     public abstract class BaseDTO
     {
         public DateTime Date { get; set; }
-        public string Status { get; set; }
+        public EOrderStatus Status { get; set; }
         public int CustomerId { get; set; }
     }
 }

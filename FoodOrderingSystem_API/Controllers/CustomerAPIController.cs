@@ -1,39 +1,39 @@
 ﻿using AutoMapper;
 using FoodOrderingSystem_API.Contracts;
-using FoodOrderingSystem_API.DTOs.Menu;
+using FoodOrderingSystem_API.DTOs.Customer;
 using FoodOrderingSystem_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace FoodOrderingSystem_API.Controllers
-{
-    [Route("api/MenuAPI")]
-    [ApiController]
-    public class MenuAPIController: ControllerBase
-    {
-        private readonly IMenuRepository _menuRepo;
+namespace FoodOrderingSystem_API.Controllers;
+
+[Route("api/CustomerAPI")]
+[ApiController]
+public class CustomerAPIController : ControllerBase
+{ 
+        private readonly ICustomerRepository _customerRepo;
         private readonly IMapper _mapper;
         protected APIResponse _response;
 
-        public MenuAPIController(IMenuRepository menuRepository, IMapper mapper)
+        public CustomerAPIController(ICustomerRepository customerRepository, IMapper mapper)
         {
-            this._menuRepo = menuRepository;
+            this._customerRepo = customerRepository;
             this._mapper = mapper;
             this._response = new APIResponse();
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<APIResponse>> GetAllMenus()
+        public async Task<ActionResult<APIResponse>> GetAllCustomers()
         {
             try
             {
-                IEnumerable<Menu> menus = await _menuRepo.GetAllAsync(tracked: false);
-                var menusDTO = _mapper.Map<List<MenuDTO>>(menus);
+                IEnumerable<Customer> customers = await _customerRepo.GetAllAsync(tracked: false);
+                var customersDTO = _mapper.Map<List<CustomerDTO>>(customers);
 
-                _response.Result = menusDTO;
+                _response.Result = customersDTO;
                 _response.StatusCode = HttpStatusCode.OK;
 
                 return Ok(_response);
@@ -46,12 +46,12 @@ namespace FoodOrderingSystem_API.Controllers
             return _response;
         }
 
-        [HttpGet("{id:int}", Name = "GetMenu")]
+        [HttpGet("{id:int}", Name = "GetCustomer")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
 
-        public async Task<ActionResult<APIResponse>> GetMenu(int id)
+        public async Task<ActionResult<APIResponse>> GetCustomer(int id)
         {
             try
             {
@@ -61,18 +61,18 @@ namespace FoodOrderingSystem_API.Controllers
                     return BadRequest();
                 }
 
-                var menu = await _menuRepo.GetAsync(menu => menu.Id == id, tracked: false);
+                var customer = await _customerRepo.GetCustomer(customer => customer.Id == id, tracked: false);
 
-                if (menu == null)
+                if (customer == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
                 }
 
-                var menuDTO = _mapper.Map<MenuDTO>(menu);
+                var customerDTO = _mapper.Map<CustomerDTO>(customer);
 
                 _response.StatusCode = HttpStatusCode.OK;
-                _response.Result = menuDTO;
+                _response.Result = customerDTO;
 
                 return Ok(_response);
 
@@ -90,7 +90,7 @@ namespace FoodOrderingSystem_API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
 
-        public async Task<ActionResult<APIResponse>> CreateMenu([FromBody] MenuCreateDTO createDTO)
+        public async Task<ActionResult<APIResponse>> CreateCustomer([FromBody] CustomerCreateDTO createDTO)
         {
             try
             {
@@ -99,22 +99,22 @@ namespace FoodOrderingSystem_API.Controllers
                     return BadRequest();
                 }
 
-                if (await _menuRepo.GetAsync(menu => menu.Name.ToLower() == createDTO.Name.ToLower()) != null)
+                if (await _customerRepo.GetAsync(customer => customer.FirstName.ToLower() == createDTO.FirstName.ToLower() && customer.LastName.ToLower() == createDTO.LastName.ToLower()) != null)
                 {
-                    ModelState.AddModelError("Custom Error", "Menu already exists!");
+                    ModelState.AddModelError("Custom Error", "Customer already exists!");
                     return BadRequest(ModelState);
                 }
 
-                var menu = _mapper.Map<Menu>(createDTO);
+                var customer = _mapper.Map<Customer>(createDTO);
 
-                await _menuRepo.CreateAsync(menu);
+                await _customerRepo.CreateAsync(customer);
 
-                var menuDTO = _mapper.Map<MenuCreateDTO>(menu);
+                var customerDTO = _mapper.Map<CustomerCreateDTO>(customer);
 
-                _response.Result = menuDTO;
+                _response.Result = customerDTO;
                 _response.StatusCode = HttpStatusCode.Created;
 
-                return CreatedAtRoute("GetMenu", new { id = menu.Id }, _response);
+                return CreatedAtRoute("GetCustomer", new { id = customer.Id }, _response);
             }
             catch (Exception ex)
             {
@@ -128,7 +128,7 @@ namespace FoodOrderingSystem_API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<APIResponse>> DeleteMenu(int id)
+        public async Task<ActionResult<APIResponse>> DeleteCustomer(int id)
         {
             try
             {
@@ -137,14 +137,14 @@ namespace FoodOrderingSystem_API.Controllers
                     return BadRequest();
                 }
 
-                var menu = await _menuRepo.GetAsync(menu => menu.Id == id, tracked: false);
+                var customer = await _customerRepo.GetAsync(customer => customer.Id == id, tracked: false);
 
-                if (menu == null)
+                if (customer == null)
                 {
                     return NotFound();
                 }
 
-                await _menuRepo.RemoveAsync(menu);
+                await _customerRepo.RemoveAsync(customer);
                 _response.StatusCode = HttpStatusCode.NoContent;
 
                 return Ok(_response);
@@ -160,7 +160,7 @@ namespace FoodOrderingSystem_API.Controllers
         [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<APIResponse>> UpdateMenu([FromBody] MenuUpdateDTO updateDTO, int id)
+        public async Task<ActionResult<APIResponse>> UpdateCustomer([FromBody] CustomerUpdateDTO updateDTO, int id)
         {
             try
             {
@@ -174,8 +174,8 @@ namespace FoodOrderingSystem_API.Controllers
                     return BadRequest();
                 }
 
-                var menu = _mapper.Map<Menu>(updateDTO);
-                await _menuRepo.UpdateAsync(menu);
+                var customer = _mapper.Map<Customer>(updateDTO);
+                await _customerRepo.UpdateAsync(customer);
                 _response.StatusCode = HttpStatusCode.NoContent;
 
                 return Ok(_response);
@@ -189,7 +189,7 @@ namespace FoodOrderingSystem_API.Controllers
         }
 
         [HttpPatch("{id:int}")]
-        public async Task<ActionResult<APIResponse>> UpdatePartialMenu(int id, JsonPatchDocument<MenuUpdateDTO> patchDTO)
+        public async Task<ActionResult<APIResponse>> UpdatePartialCustomer(int id, JsonPatchDocument<CustomerUpdateDTO> patchDTO)
         {
             try
             {
@@ -197,20 +197,20 @@ namespace FoodOrderingSystem_API.Controllers
                 {
                     return BadRequest();
                 }
-                var menu = await _menuRepo.GetAsync(menu => menu.Id == id, tracked: false);
+                var customer = await _customerRepo.GetAsync(customer => customer.Id == id, tracked: false);
 
-                if (menu == null)
+                if (customer == null)
                 {
                     return NotFound();
                 }
 
-                var menuUpdateDTO = _mapper.Map<MenuUpdateDTO>(menu);
+                var customerUpdateDTO = _mapper.Map<CustomerUpdateDTO>(customer);
 
-                patchDTO.ApplyTo(menuUpdateDTO, ModelState);
+                patchDTO.ApplyTo(customerUpdateDTO, ModelState);
 
-                var model = _mapper.Map<Menu>(menuUpdateDTO);
+                var model = _mapper.Map<Customer>(customerUpdateDTO);
 
-                await _menuRepo.UpdateAsync(model);
+                await _customerRepo.UpdateAsync(model);
 
                 if (!ModelState.IsValid)
                 {
@@ -226,6 +226,5 @@ namespace FoodOrderingSystem_API.Controllers
                 _response.ErrorMessages = new List<string> { ex.ToString() };
             }
             return _response;
-        }
-    }
+        } 
 }

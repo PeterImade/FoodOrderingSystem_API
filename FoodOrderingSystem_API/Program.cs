@@ -3,6 +3,7 @@ using FoodOrderingSystem_API.Contracts;
 using FoodOrderingSystem_API.Data;
 using FoodOrderingSystem_API.Respository;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,12 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 
 
-builder.Services.AddControllers().AddNewtonsoftJson();
+builder.Services.AddControllers().AddNewtonsoftJson().AddJsonOptions(opt => 
+{
+    opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+}
+);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

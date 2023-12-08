@@ -64,7 +64,8 @@ public class RestaurantAPIController : ControllerBase
                 return BadRequest();
             }
 
-            var restaurant = await _restaurantRepo.GetAsync(restaurant => restaurant.Id == id, tracked: false);
+           //var restaurant = await _restaurantRepo.GetAsync(restaurant => restaurant.Id == id, tracked: false);
+           var restaurant = await _restaurantRepo.GetRestaurant(restaurant => restaurant.Id == id, tracked: false);
 
             if (restaurant == null)
             {
@@ -102,15 +103,16 @@ public class RestaurantAPIController : ControllerBase
                 return BadRequest();
             }
 
-            if (_restaurantRepo.GetAsync(u => u.Name.ToLower() == createDTO.Name.ToLower()) != null)
+            if (await _restaurantRepo.GetAsync(restaurant => restaurant.Name.ToLower() == createDTO.Name.ToLower()) != null)
             {
-                ModelState.AddModelError("Custom Error", "Restaurant already exists!");
-
+                ModelState.AddModelError("Custom Error", "Restaurant already exists!"); 
                 return BadRequest(ModelState);
             }
 
             var restaurant = _mapper.Map<Restaurant>(createDTO);
+
             await _restaurantRepo.CreateAsync(restaurant);
+            
             var restaurantDTO = _mapper.Map<RestaurantCreateDTO>(restaurant);
 
             _response.Result = restaurantDTO;
@@ -199,7 +201,7 @@ public class RestaurantAPIController : ControllerBase
             {
                 return BadRequest();
             }
-            var restaurant = await _restaurantRepo.GetAsync(u => u.Id == id, tracked: false);
+            var restaurant = await _restaurantRepo.GetAsync(restaurant => restaurant.Id == id, tracked: false);
 
             if (restaurant == null)
             {

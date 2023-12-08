@@ -11,7 +11,7 @@ namespace FoodOrderingSystem_API.Models
         public string Name { get; set; } 
         public string Address { get; set; }
         public string Website { get; set; }
-        public long PhoneNo { get; set; }
+        public string PhoneNo { get; set; }
         public ICollection<Menu> Menus { get; set; }
     }
 }

@@ -5,8 +5,8 @@ namespace FoodOrderingSystem_API.Models
     public class Order
     {
         public int Id { get; set; }
-        public DateTime Date { get; set; }
-        public string Status { get; set; }
+        public DateTime Date { get; set; } = DateTime.Now;
+        public EOrderStatus Status { get; set; } = EOrderStatus.Pending;
         public ICollection<OrderItem> OrderItems { get; set; }
 
         [ForeignKey(nameof(Customer))]
