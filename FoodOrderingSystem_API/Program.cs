@@ -22,11 +22,10 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 
 
-builder.Services.AddControllers().AddNewtonsoftJson().AddJsonOptions(opt => 
+builder.Services.AddControllers().AddJsonOptions(opt => 
 {
     opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-}
-);
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
